@@ -1,0 +1,258 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId    String    @id @db.VarChar(255)
+  name      String    @db.VarChar(255)
+  email     String    @db.VarChar(255)
+  phNum     String    @db.Char(10)
+  dob       DateTime  @db.Date
+  passwd    String    @db.VarChar(255)
+  gender    Gender
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt @default(now())
+}
+
+model Admin {
+  adminId   String   @id @db.VarChar(255)
+  name      String   @db.VarChar(255)
+  email     String   @db.VarChar(255)
+  passwd    String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
+
+model Theater {
+  theId      String       @id @db.Char(5)
+  name       String       @db.VarChar(255)
+  city       City
+  address    String       @db.VarChar(255)
+  screens    Screen[]
+  BookedSeat BookedSeat[]
+  HostMovie  HostMovie[]
+  Booking    Booking[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt @default(now())
+}
+
+model Movie {
+  movieId     String       @id @db.Char(5)
+  title       String       @db.VarChar(255)
+  description String       @db.Text
+  duration    String       @db.VarChar(10)
+  ageRating   AgeRating
+  pubYear     Int          @db.SmallInt
+  rating      Float        @db.Float
+  ratingCount Int          @db.SmallInt
+  movieCasts  MovieCast[]
+  genres      MovieGenre[]
+  languages   MovieLang[]
+  hostMovies  HostMovie[]
+  BookedSeat  BookedSeat[]
+  bookings    Booking[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt @default(now())
+}
+
+model Screen {
+  screenId    String       @id  @db.Char(5)
+  theId       String       @db.Char(5)
+  resolution  Resolution
+  theater     Theater      @relation(fields: [theId], references: [theId])
+  bookedSeats BookedSeat[]
+  bookings    Booking[]
+  HostMovie   HostMovie[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt @default(now())
+}
+
+model BookedSeat {
+  seatRow     String   @db.Char(1)
+  seatCol     String   @db.Char(2)
+  theId       String   @db.Char(5)
+  movieId     String   @db.Char(5)
+  bookId      String   @db.Char(5)
+  screenId    String   @db.Char(5)
+  bookingDate String   @db.Char(20)
+  bookingTime String   @db.Char(5)
+  theater     Theater  @relation(fields: [theId], references: [theId])
+  movie       Movie    @relation(fields: [movieId], references: [movieId])
+  booking     Booking  @relation(fields: [bookId], references: [bookId])
+  Screen      Screen   @relation(fields: [screenId], references: [screenId])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt @default(now())
+
+  @@id([seatRow, seatCol, theId, movieId, bookingTime, bookingDate])
+}
+
+model Payment {
+  tranId    Int           @id
+  bookId    String        @db.Char(5)
+  amount    Int
+  method    PaymentMethod
+  booking   Booking       @relation(fields: [bookId], references: [bookId])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt @default(now())
+}
+
+model HostMovie {
+  theId     String   @db.Char(5)
+  screenId  String   @db.Char(5)
+  movieId   String   @db.Char(5)
+  showtime  String   @db.Char(8)
+  cost      Int      @db.SmallInt
+  movie     Movie    @relation(fields: [movieId], references: [movieId])
+  screen    Screen   @relation(fields: [screenId], references: [screenId])
+  theater   Theater  @relation(fields: [theId], references: [theId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@id([theId, screenId, movieId, showtime])
+}
+
+model Booking {
+  bookId     String       @id @db.Char(5)
+  movieId    String       @db.Char(5)
+  theId      String       @db.Char(5)
+  userId     String       @db.VarChar(255)
+  showtime   String       @db.Char(5)
+  bookdate   String       @db.Char(20)
+  seats      String       @db.Text
+  movie      Movie        @relation(fields: [movieId], references: [movieId])
+  theater    Theater      @relation(fields: [theId], references: [theId])
+  user       User         @relation(fields: [userId], references: [userId])
+  screenId   String       @db.Char(5)
+  Payment    Payment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt @default(now())
+  Screen     Screen       @relation(fields: [screenId], references: [screenId])
+  BookedSeat BookedSeat[]
+}
+
+model Cast {
+  castId     String      @id @db.Char(5)
+  name       String      @db.VarChar(255)
+  role       CastRole
+  biolink    String      @db.Text
+  movieCasts MovieCast[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt @default(now())
+}
+
+model MovieCast {
+  movieId   String   @db.Char(5)
+  castId    String   @db.Char(5)
+  movie     Movie    @relation(fields: [movieId], references: [movieId])
+  cast      Cast     @relation(fields: [castId], references: [castId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@id([movieId, castId])
+}
+
+model MovieGenre {
+  movieId   String   @db.Char(5)
+  genreName Genre
+  movie     Movie    @relation(fields: [movieId], references: [movieId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@id([movieId, genreName])
+}
+
+model MovieLang {
+  movieId   String   @db.Char(5)
+  lang      Language
+  movie     Movie    @relation(fields: [movieId], references: [movieId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@id([movieId, lang])
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum AgeRating {
+  Uplus  @map("U+")
+  UAplus @map("UA+")
+  Aplus  @map("A+")
+  S
+}
+
+enum Resolution {
+  FourD  @map("4D")
+  ThreeD @map("3D")
+  TwoD   @map("2D")
+}
+
+enum PaymentMethod {
+  UPI
+  CreditCard @map("Credit Card")
+  DebitCard  @map("Debit Card")
+  NetBanking @map("Net Banking")
+}
+
+enum CastRole {
+  Director
+  Actor
+  Producer
+  MusicDirector
+  Editor
+}
+
+enum City {
+  Bengaluru
+  Chennai
+  Chandigarh
+  Delhi
+  Hyderabad
+  Pune
+  Mumbai
+  Kochi
+  Trivandrum
+}
+
+enum Genre {
+  Comedy
+  Drama
+  Action
+  Thriller
+  Horror
+  Romance
+  SciFi
+  Fantasy
+  Adventure
+  Mystery
+  Crime
+  Documentary
+  History
+  Animation
+  Fiction
+  Biography
+}
+
+enum Language {
+  English
+  Hindi
+  Telugu
+  Kannada
+  Tamil
+  Malayalam
+  Marathi
+}

@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
+}
+
+body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+.active{
+    @apply text-purple-600
+}
+
+#searchfield{
+    padding-left: 4%;
+    background: url("/searchicon.png") no-repeat left;
+    background-size: 5%;
+    background-position: 2%;
+}
+
+.authpages{
+    background-image: url("/theater.jpg");
+    @apply bg-no-repeat bg-cover bg-center
+}
+
+::-webkit-scrollbar {
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-black rounded-full
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-400 rounded-full
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-600 cursor-pointer
+}
+
+::-webkit-scrollbar-thumb:active {
+    @apply bg-slate-800 cursor-pointer
+}
+
+nav, button{
+    @apply invisible
+}
+
+.pop-up-animation{
+    animation: pop-up 0.5s ease-in-out;
+}
+
+@keyframes pop-up {
+    0% {
+        transform: translateY(10%);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media screen {
+    nav, button{
+        @apply visible
+    }
+    #Verfication{
+        @apply invisible
+    }
+    #ticketlogo{
+        @apply invisible
+    }
+}
