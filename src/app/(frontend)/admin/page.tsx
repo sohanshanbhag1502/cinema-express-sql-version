@@ -34,6 +34,12 @@ export default function AdminPage() {
             border-2 border-white font-semibold">
                 Add Movie to the screen
             </Link>
+            <Link href='/admin/fetch-collections' 
+            className="px-4 py-2 bg-white text-black text-2xl m-4 rounded-full
+            hover:bg-black hover:text-white cursor-pointer transition-all duration-150
+            border-2 border-white font-semibold">
+                Calculate Movie Collections
+            </Link>
         </div>
     )
 }

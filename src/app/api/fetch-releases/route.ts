@@ -30,7 +30,6 @@ export async function POST(req: NextRequest){
         }
     }
     catch(e){
-        console.error(e);
         return NextResponse.json({message:"Unable to connect to database"}, 
             {status:500})
     }

@@ -2,7 +2,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import AdminSchema from "@/lib/models/admin";
 import prisma from "@/prisma/client";
-import bcrypt from "bcrypt";
 import { Admin } from "@prisma/client";
 
 export async function POST(req: NextRequest){
@@ -29,19 +28,16 @@ export async function POST(req: NextRequest){
             {status:500})
     }
 
-    validation.data.passwd = await bcrypt.hash(validation.data.passwd, 10);
-
     try{
         const { adminId, name, email, passwd } = validation.data;
 
         await prisma.$executeRaw`
-            INSERT INTO Admin (adminId, name, email, passwd)
-            VALUES (${adminId}, ${name}, ${email}, ${passwd})
+            CALL addAdmin(${adminId}, ${name}, ${email}, ${passwd});
         `;
 
     }
     catch(e){
-        return NextResponse.json({message:"Unable to connect to database"}, 
+        return NextResponse.json({message:"Admin already exists"}, 
             {status:500})
     }
 

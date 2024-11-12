@@ -19,9 +19,13 @@ export async function POST(req: NextRequest){
         var admin: Admin[] = await prisma.$queryRaw`
             SELECT * FROM Admin WHERE adminId = ${adminId} LIMIT 1;
         `;
+        var authenticated: {auth:boolean}[] = await prisma.$queryRaw`
+            SELECT authAdmin(${validation.data.adminId}, ${validation.data.passwd}) AS auth;
+        `
 
         if (admin.length === 0) {
-            return NextResponse.json({ message: "Admin not Registered" }, { status: 404 });
+            return NextResponse.json({ message: "Admin not Registered" }, 
+                { status: 404 });
         }
     }
     catch(e){
@@ -29,9 +33,9 @@ export async function POST(req: NextRequest){
             {status:500})
     }
 
-    const {adminId, passwd} = admin[0];
+    const {adminId} = validation.data;
 
-    if (await bcrypt.compare(validation.data.passwd, passwd)) {
+    if (authenticated[0].auth) {
         const CookieStore=cookies();
         const token=await sign({adminId, role:"admin"}, process.env.JWT_SECRET!);
         CookieStore.set("auth-token", token, {httpOnly: true, path: "/", 

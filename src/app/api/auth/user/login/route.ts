@@ -19,6 +19,9 @@ export async function POST(req: NextRequest){
         var user: User[] = await prisma.$queryRaw`
             SELECT * FROM User WHERE userId = ${userId} LIMIT 1;
         `;
+        var authenticated: {auth:boolean}[] = await prisma.$queryRaw`
+            SELECT authUser(${validation.data.userId}, ${validation.data.passwd}) AS auth;
+        `
         if (user.length === 0) {
             return NextResponse.json({message: "User not Registered"}, {status: 404});
         }
@@ -28,9 +31,9 @@ export async function POST(req: NextRequest){
             {status:500})
     }
 
-    const {userId, passwd} = user[0];
+    const {userId} = validation.data;
 
-    if (await bcrypt.compare(validation.data.passwd, passwd)) {
+    if (authenticated[0].auth) {
         const CookieStore=cookies();
         const token=await sign({userId, role:"user"}, process.env.JWT_SECRET!);
         CookieStore.set("auth-token", token, {httpOnly: true, path: "/",

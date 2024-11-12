@@ -54,7 +54,6 @@ export default function MoviePage(){
             setLoading(false);
             return;
         }
-        console.log(data);
         setMovieDetails(data.movie);
         setMovieGenres(data.genres);
         setMovieLangs(data.lang);
