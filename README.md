@@ -2,19 +2,18 @@
 
 ## Tools and Frameworks Used:
 - [Next.js](https://nextjs.org/): Full stack framework
-- [Neon DB](https://neon.tech/): SQL Database Cluster Provider
+- [MySQL](https://www.mysql.com/): SQL Database
 - [Prisma](https://prisma.io): ORM For SQL Database Schema Migration and Interaction
 - [Cloudinary](https://cloudinary.com/): Cloud Storage Provider for Providing Images
 - [Vercel](https://vercel.com/): Website Hosting Platform
 - [Google Analytics](https://analytics.google.com/): To measure the number of users visiting the website
 
 ## Getting Started
-- Create a free account in Neon DB and copy the Database cluster url (pooled connection url).
 - Create a free account in Cloudinary and create two upload presets (poster and cast photo)
 - Create a account in Google Analytics to measure the users visiting the website.
 - Create a .env file and add the following parameters:
 ```
-DATABASE_URL: Neon DB pooled cluster url
+DATABASE_URL: MySQL URL
 JWT_SECRET: JWT secret key
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: Cloudinary Cloud Name
 NEXT_PUBLIC_CLOUDINARY_API_KEY: Cloudinary Cloud API Key
